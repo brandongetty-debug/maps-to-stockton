@@ -686,7 +686,10 @@ function openPanel(photo, opts = {}) {
     if (GOOGLE_API_KEY) {
       streetviewPlaceholder.style.display = 'none';
       streetviewFrame.style.display = 'block';
-      streetviewFrame.src = `https://www.google.com/maps/embed/v1/streetview?key=${GOOGLE_API_KEY}&location=${photo.lat},${photo.lng}&heading=0&pitch=0&fov=90`;
+      const h = photo.heading != null ? photo.heading : 0;
+      const p = photo.pitch != null ? photo.pitch : 0;
+      const f = photo.fov != null ? photo.fov : 90;
+      streetviewFrame.src = `https://www.google.com/maps/embed/v1/streetview?key=${GOOGLE_API_KEY}&location=${photo.lat},${photo.lng}&heading=${h}&pitch=${p}&fov=${f}`;
     } else {
       streetviewFrame.style.display = 'none';
       streetviewPlaceholder.style.display = 'flex';
@@ -712,7 +715,10 @@ function openPanel(photo, opts = {}) {
       if (GOOGLE_API_KEY && currentPhoto) {
         streetviewPlaceholder.style.display = 'none';
         streetviewFrame.style.display = 'block';
-        streetviewFrame.src = `https://www.google.com/maps/embed/v1/streetview?key=${GOOGLE_API_KEY}&location=${currentPhoto.lat},${currentPhoto.lng}&heading=0&pitch=0&fov=90`;
+        const h2 = currentPhoto.heading != null ? currentPhoto.heading : 0;
+        const p2 = currentPhoto.pitch != null ? currentPhoto.pitch : 0;
+        const f2 = currentPhoto.fov != null ? currentPhoto.fov : 90;
+        streetviewFrame.src = `https://www.google.com/maps/embed/v1/streetview?key=${GOOGLE_API_KEY}&location=${currentPhoto.lat},${currentPhoto.lng}&heading=${h2}&pitch=${p2}&fov=${f2}`;
       }
     }, 400);
   }
