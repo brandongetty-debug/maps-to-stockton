@@ -38,7 +38,7 @@
     left: 100px;
     z-index: 1000;
     pointer-events: none;
-    transition: opacity 0.4s ease;
+    transition: all 0.4s ease;
   }
   #title-overlay h1 {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -49,6 +49,7 @@
     color: #fff;
     text-shadow: 0 2px 12px rgba(0,0,0,0.7);
     line-height: 1.2;
+    transition: all 0.3s;
   }
   #title-overlay .subtitle {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -59,6 +60,7 @@
     color: rgba(255,255,255,0.6);
     text-shadow: 0 1px 8px rgba(0,0,0,0.7);
     margin-top: 4px;
+    transition: all 0.3s;
   }
   #title-overlay .subtitle a {
     pointer-events: auto;
@@ -70,6 +72,24 @@
   #title-overlay .subtitle a:hover {
     color: #7dd3d0;
     border-color: rgba(125,211,208,0.6);
+  }
+
+  /* Light mode title adjustments */
+  body.light-mode #title-overlay h1 {
+    color: #1a1a1a;
+    text-shadow: 0 1px 6px rgba(255,255,255,0.5);
+  }
+  body.light-mode #title-overlay .subtitle {
+    color: rgba(0,0,0,0.5);
+    text-shadow: 0 1px 4px rgba(255,255,255,0.5);
+  }
+  body.light-mode #title-overlay .subtitle a {
+    color: #2a8a86;
+    border-bottom-color: rgba(42,138,134,0.4);
+  }
+  body.light-mode #title-overlay .subtitle a:hover {
+    color: #1d6b68;
+    border-color: rgba(29,107,104,0.6);
   }
 
   /* ── Control panel ── */
@@ -130,12 +150,12 @@
     left: calc(100% + 12px);
     top: 50%;
     transform: translateY(-50%);
-    width: 240px;
+    width: 260px;
     background: rgba(17,17,17,0.95);
     backdrop-filter: blur(16px);
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 8px;
-    padding: 16px 18px;
+    padding: 18px 20px;
     z-index: 2000;
     box-shadow: 0 8px 32px rgba(0,0,0,0.5);
   }
@@ -144,15 +164,23 @@
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 13px;
     font-weight: 300;
-    line-height: 1.6;
-    color: rgba(255,255,255,0.7);
+    line-height: 1.7;
+    letter-spacing: 0.01em;
+    color: rgba(255,255,255,0.75);
     margin: 0;
   }
-  .info-card p + p {
-    margin-top: 10px;
+  .info-card .info-desktop {
+    display: block;
+    margin-top: 14px;
     font-size: 11px;
-    color: rgba(255,255,255,0.4);
-    font-style: italic;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.5);
+    animation: blink-text 1s step-end infinite;
+  }
+  @keyframes blink-text {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
   }
   /* Arrow pointing left toward the button */
   .info-card::before {
@@ -207,7 +235,7 @@
     z-index: 2000;
     background: #111;
     transform: translateX(100%);
-    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s;
     display: flex;
     flex-direction: column;
     box-shadow: -4px 0 40px rgba(0,0,0,0.6);
@@ -215,17 +243,35 @@
   }
   #photo-panel.open { transform: translateX(0); }
 
-  /* Close button */
+  /* Light mode panel */
+  body.light-mode #photo-panel { background: #f0efed; }
+  body.light-mode #panel-tabs { background: #e8e6e3; border-bottom-color: #d4d2cf; }
+  body.light-mode .panel-tab { color: rgba(0,0,0,0.35); }
+  body.light-mode .panel-tab:hover { color: rgba(0,0,0,0.6); }
+  body.light-mode .panel-tab.active { color: #1a1a1a; border-bottom-color: #1a1a1a; }
+  body.light-mode #photo-view { background: #e4e2df; }
+  body.light-mode #photo-caption .location-name { color: #1a1a1a; }
+  body.light-mode #photo-caption .photo-date { color: rgba(0,0,0,0.45); }
+  body.light-mode #photo-caption .photo-tags { color: rgba(0,0,0,0.25); }
+  body.light-mode #photo-caption .tumblr-link { color: rgba(0,0,0,0.35); border-bottom-color: rgba(0,0,0,0.15); }
+  body.light-mode #photo-caption .tumblr-link:hover { color: rgba(0,0,0,0.6); border-color: rgba(0,0,0,0.3); }
+  body.light-mode #panel-close { background: rgba(0,0,0,0.06); color: rgba(0,0,0,0.4); }
+  body.light-mode #panel-close:hover { background: rgba(0,0,0,0.12); color: #1a1a1a; }
+  body.light-mode .panel-nav { background: rgba(255,255,255,0.6); color: rgba(0,0,0,0.5); }
+  body.light-mode .panel-nav:hover { background: rgba(255,255,255,0.85); color: #1a1a1a; }
+  body.light-mode #streetview-view { background: #e4e2df; }
+
+  /* Close button — aligned with tab bar */
   #panel-close {
     position: absolute;
-    top: 14px; left: 14px;
+    top: 5px; left: 10px;
     z-index: 10;
     width: 36px; height: 36px;
     border-radius: 50%;
     border: none;
     background: rgba(255,255,255,0.06);
     color: rgba(255,255,255,0.5);
-    font-size: 18px;
+    font-size: 16px;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -234,7 +280,7 @@
   }
   #panel-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
 
-  /* Nav arrows */
+  /* Nav arrows — moved inward */
   .panel-nav {
     position: absolute;
     top: 50%;
@@ -254,8 +300,8 @@
     backdrop-filter: blur(8px);
   }
   .panel-nav:hover { background: rgba(0,0,0,0.6); color: #fff; }
-  #nav-prev { left: 14px; }
-  #nav-next { right: 14px; }
+  #nav-prev { left: 24px; }
+  #nav-next { right: 24px; }
 
   /* Tab switcher */
   #panel-tabs {
@@ -263,6 +309,7 @@
     background: #161616;
     border-bottom: 1px solid #2a2a2a;
     flex-shrink: 0;
+    transition: all 0.3s;
   }
   .panel-tab {
     flex: 1;
@@ -307,6 +354,7 @@
     justify-content: center;
     padding: 24px;
     background: #0e0e0e;
+    transition: background 0.3s;
   }
   #photo-view img {
     max-width: 100%;
@@ -329,18 +377,21 @@
     color: #fff;
     letter-spacing: 0.02em;
     margin-bottom: 4px;
+    transition: color 0.3s;
   }
   #photo-caption .photo-date {
     font-size: 12px;
     font-weight: 300;
     letter-spacing: 0.08em;
     color: rgba(255,255,255,0.45);
+    transition: color 0.3s;
   }
   #photo-caption .photo-tags {
     font-size: 11px;
     font-weight: 300;
     color: rgba(255,255,255,0.2);
     margin-top: 6px;
+    transition: color 0.3s;
   }
   #photo-caption .tumblr-link {
     display: inline-block;
@@ -356,7 +407,7 @@
   #photo-caption .tumblr-link:hover { color: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.3); }
 
   /* Street View */
-  #streetview-view { background: #0a0a0a; }
+  #streetview-view { background: #0a0a0a; transition: background 0.3s; }
   #streetview-frame { width: 100%; height: 100%; border: none; }
   #streetview-placeholder {
     display: flex;
@@ -530,8 +581,8 @@
   <div class="info-tooltip-wrap">
     <button class="ctrl-btn" id="ctrl-info" title="About this project">Info</button>
     <div class="info-card" id="info-card">
-      <p>Ongoing work about my hometown of Stockton, California. 2010–?</p>
-      <p>Best viewed on desktop.</p>
+      <p>Ongoing work about my hometown of Stockton, California. 2010&ndash;?</p>
+      <span class="info-desktop">Best viewed on desktop.</span>
     </div>
   </div>
 
@@ -559,8 +610,8 @@
   <button class="panel-nav" id="nav-prev" aria-label="Previous photo">&#x2039;</button>
   <button class="panel-nav" id="nav-next" aria-label="Next photo">&#x203A;</button>
   <div id="panel-tabs">
-    <button class="panel-tab active" data-tab="photo">Photograph · Then</button>
-    <button class="panel-tab" data-tab="streetview">Street View · Now</button>
+    <button class="panel-tab active" data-tab="photo">Photograph &middot; Then</button>
+    <button class="panel-tab" data-tab="streetview">Street View &middot; Now</button>
   </div>
   <div id="panel-body">
     <div id="photo-view" class="panel-view active">
@@ -636,10 +687,12 @@ document.getElementById('ctrl-theme').addEventListener('click', () => {
     map.removeLayer(darkLayer);
     map.addLayer(lightLayer);
     themeIcon.innerHTML = '&#9790;';
+    document.body.classList.add('light-mode');
   } else {
     map.removeLayer(lightLayer);
     map.addLayer(darkLayer);
     themeIcon.innerHTML = '&#9788;';
+    document.body.classList.remove('light-mode');
   }
   isDark = !isDark;
 });
@@ -743,15 +796,21 @@ document.querySelectorAll('.year-btn').forEach(btn => {
   });
 });
 
-// Random button
+// ═══════════════════════════════════════════
+//  NAV MODE: sequential vs random
+// ═══════════════════════════════════════════
+let shuffleMode = false;  // false = sequential, true = random (set by Random button)
+
+// Random button — activates shuffle mode
 document.getElementById('ctrl-random').addEventListener('click', () => {
   if (visiblePhotos.length === 0) return;
+  shuffleMode = true;
   const idx = Math.floor(Math.random() * visiblePhotos.length);
   openPanel(visiblePhotos[idx]);
 });
 
 // ═══════════════════════════════════════════
-//  NAV HISTORY (random shuffle with back)
+//  NAV HISTORY (supports back through random)
 // ═══════════════════════════════════════════
 let navHistory = [];     // stack of photo ids we've visited
 let navHistoryIdx = -1;  // current position in history
@@ -892,6 +951,7 @@ function closePanel() {
   document.body.classList.remove('panel-open');
   if (activeMarkerEl) { activeMarkerEl.classList.remove('active'); activeMarkerEl = null; }
   currentPhoto = null;
+  shuffleMode = false;  // Reset to sequential when panel closes
   streetviewFrame.src = '';
   // Re-invalidate map to fill viewport
   setTimeout(() => map.invalidateSize({ animate: true }), 480);
@@ -904,10 +964,11 @@ map.on('click', e => {
   if (panel.classList.contains('open') && !e.originalEvent?.target?.closest('.photo-marker')) closePanel();
 });
 
-// Nav — "next" is random, "prev" goes back in history
+// Nav — sequential by default, random only after Random button
 function navigateNext() {
   if (!currentPhoto || visiblePhotos.length === 0) return;
-  // If we've gone back and there's forward history, go forward
+
+  // If we've gone back and there's forward history, replay it
   if (navHistoryIdx < navHistory.length - 1) {
     navHistoryIdx++;
     const nextId = navHistory[navHistoryIdx];
@@ -917,20 +978,40 @@ function navigateNext() {
       return;
     }
   }
-  // Otherwise pick a random photo
-  const next = getRandomPhoto(currentPhoto.id);
-  if (next) openPanel(next, { fromNav: true });
+
+  if (shuffleMode) {
+    // Random mode: pick a random photo
+    const next = getRandomPhoto(currentPhoto.id);
+    if (next) openPanel(next, { fromNav: true });
+  } else {
+    // Sequential mode: go to next in visiblePhotos
+    const idx = visiblePhotos.findIndex(p => p.id === currentPhoto.id);
+    if (idx === -1) return;
+    const next = (idx + 1) % visiblePhotos.length;
+    openPanel(visiblePhotos[next], { fromNav: true });
+  }
 }
 
 function navigatePrev() {
   if (!currentPhoto) return;
+
+  // If there's back history, go back
   if (navHistoryIdx > 0) {
     navHistoryIdx--;
     const prevId = navHistory[navHistoryIdx];
     const entry = markerMap.get(prevId);
     if (entry) {
       openPanel(entry.photo, { fromNav: true, skipHistory: true });
+      return;
     }
+  }
+
+  // If no history (sequential mode, first photo), wrap to previous
+  if (!shuffleMode) {
+    const idx = visiblePhotos.findIndex(p => p.id === currentPhoto.id);
+    if (idx === -1) return;
+    const prev = (idx - 1 + visiblePhotos.length) % visiblePhotos.length;
+    openPanel(visiblePhotos[prev], { fromNav: true });
   }
 }
 
