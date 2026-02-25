@@ -3,7 +3,60 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Maps to Stockton — Brandon Getty</title>
+<title>Maps to Stockton — Brandon Getty | Street Photography from Stockton, California</title>
+
+<!-- SEO Meta Tags -->
+<meta name="description" content="Maps to Stockton is an ongoing street and documentary photography project by Brandon Getty, mapping photographs made in Stockton, California from 2011 to present.">
+<meta name="keywords" content="Brandon Getty, Maps to Stockton, Stockton California, street photography, documentary photography, Stockton photographer, California photography, urban photography, Stockton CA, Central Valley photography, San Joaquin County, photo map, interactive photo map, Brandon Getty photography">
+<meta name="author" content="Brandon Getty">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://mapstostockton.com">
+
+<!-- Open Graph (Facebook, LinkedIn, iMessage, etc.) -->
+<meta property="og:title" content="Maps to Stockton — Brandon Getty">
+<meta property="og:description" content="An ongoing street and documentary photography project mapping photographs made in Stockton, California from 2011 to present.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mapstostockton.com">
+<meta property="og:site_name" content="Maps to Stockton">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://mapstostockton.com/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Street photograph from Stockton, California by Brandon Getty">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Maps to Stockton — Brandon Getty">
+<meta name="twitter:description" content="An ongoing street and documentary photography project mapping photographs made in Stockton, California from 2011 to present.">
+<meta name="twitter:image" content="https://mapstostockton.com/og-image.jpg">
+<meta name="twitter:image:alt" content="Street photograph from Stockton, California by Brandon Getty">
+
+<!-- Schema.org structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Maps to Stockton",
+  "url": "https://mapstostockton.com",
+  "image": "https://mapstostockton.com/og-image.jpg",
+  "description": "An ongoing street and documentary photography project by Brandon Getty, mapping photographs made in Stockton, California from 2011 to present.",
+  "author": {
+    "@type": "Person",
+    "name": "Brandon Getty",
+    "url": "https://www.brandongettyphoto.com"
+  },
+  "genre": ["Street Photography", "Documentary Photography"],
+  "about": {
+    "@type": "Place",
+    "name": "Stockton, California",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Stockton",
+      "addressRegion": "CA",
+      "addressCountry": "US"
+    }
+  }
+}</script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
@@ -858,6 +911,11 @@ document.querySelectorAll('.year-btn').forEach(btn => {
     }
     createMarkers(visiblePhotos);
     closePanel();
+    // Zoom out to fit all points for the selected year
+    if (visiblePhotos.length > 0) {
+      const bounds = clusterGroup.getBounds().pad(0.15);
+      map.flyToBounds(bounds, { animate: true, duration: 0.8 });
+    }
   });
 });
 
