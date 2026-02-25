@@ -92,6 +92,57 @@
     border-color: rgba(29,107,104,0.6);
   }
 
+  /* Light mode control panel */
+  body.light-mode .ctrl-btn {
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(12px);
+    border-color: rgba(0,0,0,0.1);
+    color: rgba(0,0,0,0.5);
+  }
+  body.light-mode .ctrl-btn:hover {
+    color: rgba(0,0,0,0.8);
+    background: rgba(255,255,255,0.95);
+  }
+  body.light-mode .ctrl-btn.active {
+    color: #1a1a1a;
+    background: rgba(0,0,0,0.08);
+  }
+  body.light-mode .ctrl-zoom {
+    color: rgba(0,0,0,0.55);
+  }
+  body.light-mode .ctrl-zoom:hover {
+    color: #1a1a1a;
+  }
+  body.light-mode .year-btn {
+    background: rgba(255,255,255,0.88);
+    border-color: rgba(0,0,0,0.1);
+    color: rgba(0,0,0,0.4);
+  }
+  body.light-mode .year-btn:hover {
+    color: rgba(0,0,0,0.7);
+    background: rgba(255,255,255,0.95);
+  }
+  body.light-mode .year-btn.active {
+    color: #1a1a1a;
+    background: rgba(0,0,0,0.08);
+  }
+  body.light-mode .info-card {
+    background: rgba(255,255,255,0.95);
+    border-color: rgba(0,0,0,0.1);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  }
+  body.light-mode .info-card p {
+    color: rgba(0,0,0,0.65);
+  }
+  body.light-mode .info-card .info-desktop {
+    color: #b8960a;
+  }
+  body.light-mode .info-card::before {
+    background: rgba(255,255,255,0.95);
+    border-left-color: rgba(0,0,0,0.1);
+    border-bottom-color: rgba(0,0,0,0.1);
+  }
+
   /* ── Control panel ── */
   #controls {
     position: absolute;
