@@ -30,14 +30,14 @@
     top: 24px;
     left: 80px;
     z-index: 1000;
-    pointer-events: none;
     transition: opacity 0.4s ease;
   }
   #title-overlay h1 {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: 500;
     font-size: 28px;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
     color: #fff;
     text-shadow: 0 2px 12px rgba(0,0,0,0.7);
     line-height: 1.2;
@@ -52,235 +52,185 @@
     text-shadow: 0 1px 8px rgba(0,0,0,0.7);
     margin-top: 4px;
   }
-
-  /* ── Info bar ── */
-  #info-bar {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    z-index: 1000;
-    background: linear-gradient(transparent, rgba(0,0,0,0.85));
-    padding: 40px 24px 20px;
-    pointer-events: none;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-  }
-  #info-bar .photo-count {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-weight: 300;
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.5);
-  }
-  #info-bar .location-label {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-weight: 300;
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.5);
-    text-align: right;
-  }
-
-  /* ── Year filter ── */
-  #year-filter {
-    position: absolute;
-    bottom: 52px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    display: flex;
-    gap: 2px;
-    background: rgba(17,17,17,0.85);
-    backdrop-filter: blur(12px);
-    border-radius: 8px;
-    padding: 4px;
-    border: 1px solid rgba(255,255,255,0.08);
-  }
-  .year-btn {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-weight: 400;
-    font-size: 11px;
-    letter-spacing: 0.04em;
-    color: rgba(255,255,255,0.4);
-    background: none;
-    border: none;
-    padding: 7px 12px;
-    border-radius: 5px;
-    cursor: pointer;
+  #title-overlay .subtitle a {
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
     transition: all 0.2s;
-    white-space: nowrap;
   }
-  .year-btn:hover { color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.05); }
-  .year-btn.active {
-    color: #fff;
-    background: rgba(255,255,255,0.12);
+  #title-overlay .subtitle a:hover {
+    color: rgba(255,255,255,0.9);
+    border-color: rgba(255,255,255,0.5);
   }
 
-  /* ── Photo panel ── */
-  #photo-panel {
+  /* ── Control panel ── */
+  #controls {
     position: absolute;
-    top: 0; right: 0;
-    width: 520px;
-    height: 100vh;
-    z-index: 2000;
-    background: #111;
-    transform: translateX(100%);
-    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    top: 90px;
+    left: 24px;
+    z-index: 1000;
     display: flex;
     flex-direction: column;
-    box-shadow: -4px 0 40px rgba(0,0,0,0.6);
-    overflow: hidden;
+    gap: 2px;
+    width: 52px;
   }
-  #photo-panel.open { transform: translateX(0); }
-
-  #panel-close {
-    position: absolute;
-    top: 16px; right: 16px;
-    z-index: 10;
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    border: none;
-    background: rgba(0,0,0,0.6);
-    color: #fff;
-    font-size: 18px;
+  .ctrl-btn {
+    width: 52px;
+    height: 38px;
+    background: rgba(17,17,17,0.88);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.5);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.2s;
-    backdrop-filter: blur(8px);
-  }
-  #panel-close:hover { background: rgba(0,0,0,0.8); }
-
-  /* Nav arrows */
-  .panel-nav {
-    position: absolute;
-    top: 50%;
-    z-index: 10;
-    width: 40px; height: 40px;
-    border-radius: 50%;
-    border: none;
-    background: rgba(0,0,0,0.5);
-    color: rgba(255,255,255,0.7);
-    font-size: 20px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transform: translateY(-50%);
     transition: all 0.2s;
-    backdrop-filter: blur(8px);
   }
-  .panel-nav:hover { background: rgba(0,0,0,0.7); color: #fff; }
-  #nav-prev { left: 12px; }
-  #nav-next { right: 56px; }
+  .ctrl-btn:first-child { border-radius: 6px 6px 0 0; }
+  .ctrl-btn:hover { color: rgba(255,255,255,0.85); background: rgba(30,30,30,0.92); }
+  .ctrl-btn.active { color: #fff; background: rgba(255,255,255,0.12); }
+  .ctrl-btn .icon { font-size: 16px; line-height: 1; }
+
+  .ctrl-sep {
+    height: 6px;
+  }
+
+  .ctrl-zoom { font-size: 18px; font-weight: 300; }
+
+  /* Years dropdown */
+  #years-panel {
+    display: none;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 0;
+  }
+  #years-panel.open { display: flex; }
+  .year-btn {
+    width: 52px;
+    height: 32px;
+    background: rgba(17,17,17,0.88);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-top: none;
+    color: rgba(255,255,255,0.4);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 10px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .year-btn:hover { color: rgba(255,255,255,0.7); background: rgba(30,30,30,0.92); }
+  .year-btn.active { color: #fff; background: rgba(255,255,255,0.12); }
+
+  .ctrl-last { border-radius: 0 0 6px 6px; }
+
+  /* ── Photo overlay ── */
+  #overlay-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: rgba(0,0,0,0.82);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+  }
+  #overlay-backdrop.open { opacity: 1; pointer-events: auto; }
+
+  #overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2001;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+  }
+  #overlay.open { opacity: 1; pointer-events: auto; }
+
+  #overlay-content {
+    width: 82vw;
+    max-width: 1100px;
+    height: 85vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
 
   /* Tab switcher */
-  #panel-tabs {
+  #overlay-tabs {
     display: flex;
-    background: #1a1a1a;
-    border-bottom: 1px solid #2a2a2a;
+    justify-content: center;
+    gap: 0;
     flex-shrink: 0;
+    margin-bottom: 12px;
   }
-  .panel-tab {
-    flex: 1;
-    padding: 14px 0;
-    text-align: center;
+  .overlay-tab {
+    padding: 10px 24px;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: 400;
     font-size: 11px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: rgba(255,255,255,0.4);
+    color: rgba(255,255,255,0.35);
     cursor: pointer;
     border: none;
+    background: none;
     border-bottom: 2px solid transparent;
     transition: all 0.25s;
-    background: none;
   }
-  .panel-tab:hover { color: rgba(255,255,255,0.7); }
-  .panel-tab.active { color: #fff; border-bottom-color: #fff; }
+  .overlay-tab:hover { color: rgba(255,255,255,0.7); }
+  .overlay-tab.active { color: #fff; border-bottom-color: #fff; }
 
-  #panel-body {
+  /* Photo/SV views */
+  #overlay-body {
     flex: 1;
-    overflow: hidden;
     position: relative;
+    overflow: hidden;
+    border-radius: 4px;
   }
-
-  .panel-view {
+  .overlay-view {
     position: absolute;
     inset: 0;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s;
-    overflow-y: auto;
   }
-  .panel-view.active { opacity: 1; pointer-events: auto; }
+  .overlay-view.active { opacity: 1; pointer-events: auto; }
 
-  /* Photo view */
   #photo-view {
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
+    background: transparent;
   }
   #photo-view img {
     max-width: 100%;
-    max-height: 60vh;
+    max-height: 100%;
     object-fit: contain;
     border-radius: 2px;
-    background: #1a1a1a;
     transition: opacity 0.2s ease;
   }
-  #photo-view img.loading {
-    opacity: 0.3;
-  }
-  #photo-caption {
-    margin-top: 20px;
-    text-align: center;
-    padding-bottom: 20px;
-  }
-  #photo-caption .location-name {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 22px;
-    font-weight: 500;
-    color: #fff;
-    margin-bottom: 6px;
-  }
-  #photo-caption .photo-date {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 12px;
-    font-weight: 300;
-    letter-spacing: 0.08em;
-    color: rgba(255,255,255,0.45);
-  }
-  #photo-caption .photo-tags {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 11px;
-    font-weight: 300;
-    color: rgba(255,255,255,0.25);
-    margin-top: 8px;
-  }
-  #photo-caption .tumblr-link {
-    display: inline-block;
-    margin-top: 12px;
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 11px;
-    font-weight: 400;
-    letter-spacing: 0.06em;
-    color: rgba(255,255,255,0.3);
-    text-decoration: none;
-    border-bottom: 1px solid rgba(255,255,255,0.15);
-    transition: all 0.2s;
-  }
-  #photo-caption .tumblr-link:hover { color: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.3); }
+  #photo-view img.loading { opacity: 0.3; }
 
-  /* Street view */
-  #streetview-view { background: #0a0a0a; }
-  #streetview-frame { width: 100%; height: 100%; border: none; }
+  #streetview-view {
+    background: #0a0a0a;
+    border-radius: 4px;
+  }
+  #streetview-frame { width: 100%; height: 100%; border: none; border-radius: 4px; }
   #streetview-placeholder {
     display: flex;
     flex-direction: column;
@@ -297,6 +247,85 @@
     line-height: 1.6;
     max-width: 300px;
   }
+
+  /* Caption */
+  #overlay-caption {
+    text-align: center;
+    padding: 16px 0 0;
+    flex-shrink: 0;
+  }
+  #overlay-caption .location-name {
+    font-size: 20px;
+    font-weight: 500;
+    color: #fff;
+    letter-spacing: 0.02em;
+    margin-bottom: 4px;
+  }
+  #overlay-caption .photo-date {
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.45);
+  }
+  #overlay-caption .photo-tags {
+    font-size: 11px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.2);
+    margin-top: 6px;
+  }
+  #overlay-caption .tumblr-link {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.3);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    transition: all 0.2s;
+  }
+  #overlay-caption .tumblr-link:hover { color: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.3); }
+
+  /* Close button */
+  #overlay-close {
+    position: absolute;
+    top: -4px; right: -60px;
+    z-index: 10;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.6);
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  #overlay-close:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+  /* Nav arrows */
+  .overlay-nav {
+    position: fixed;
+    top: 50%;
+    z-index: 2002;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.5);
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(-50%);
+    transition: all 0.2s;
+  }
+  .overlay-nav:hover { background: rgba(255,255,255,0.12); color: #fff; }
+  #nav-prev { left: 20px; }
+  #nav-next { right: 20px; }
 
   /* ── Custom markers ── */
   .photo-marker {
@@ -315,8 +344,14 @@
   }
   .photo-marker.active {
     background: #ff4444;
-    transform: scale(2);
-    box-shadow: 0 0 16px rgba(255,68,68,0.7);
+    transform: scale(2.2);
+    box-shadow: 0 0 20px rgba(255,68,68,0.8), 0 0 40px rgba(255,68,68,0.3);
+    animation: marker-pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes marker-pulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(255,68,68,0.8), 0 0 40px rgba(255,68,68,0.3); transform: scale(2.2); }
+    50% { box-shadow: 0 0 28px rgba(255,68,68,1), 0 0 56px rgba(255,68,68,0.5); transform: scale(2.6); }
   }
 
   /* Cluster styling */
@@ -372,25 +407,15 @@
   }
   .leaflet-tooltip.photo-tooltip::before { border-top-color: rgba(0,0,0,0.85); }
 
-  /* Leaflet overrides */
-  .leaflet-control-zoom a {
-    background: rgba(17,17,17,0.9) !important;
-    color: #fff !important;
-    border-color: #333 !important;
-  }
-  .leaflet-control-zoom a:hover { background: rgba(40,40,40,0.95) !important; }
+  /* Hide default Leaflet controls */
+  .leaflet-control-zoom { display: none !important; }
+  .leaflet-control-layers { display: none !important; }
   .leaflet-control-attribution {
     background: rgba(0,0,0,0.5) !important;
     color: rgba(255,255,255,0.3) !important;
     font-size: 10px !important;
   }
   .leaflet-control-attribution a { color: rgba(255,255,255,0.4) !important; }
-  .leaflet-control-layers {
-    background: rgba(17,17,17,0.9) !important;
-    border: 1px solid #333 !important;
-    color: #fff !important;
-    border-radius: 6px !important;
-  }
 
   /* Loading overlay */
   #loading {
@@ -411,6 +436,8 @@
     font-size: 24px;
     color: rgba(255,255,255,0.6);
     margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
   }
   #loading p {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -420,9 +447,16 @@
   }
 
   @media (max-width: 700px) {
-    #photo-panel { width: 100vw; }
-    #title-overlay h1 { font-size: 22px; }
-    .year-btn { padding: 6px 8px; font-size: 10px; }
+    #overlay-content { width: 95vw; height: 90vh; }
+    #overlay-close { top: -48px; right: 0; }
+    #title-overlay h1 { font-size: 20px; }
+    #title-overlay { left: 60px; }
+    #controls { top: 80px; left: 12px; width: 44px; }
+    .ctrl-btn { width: 44px; height: 34px; font-size: 10px; }
+    .year-btn { width: 44px; height: 28px; font-size: 9px; }
+    .overlay-nav { width: 36px; height: 36px; font-size: 18px; }
+    #nav-prev { left: 8px; }
+    #nav-next { right: 8px; }
   }
 </style>
 </head>
@@ -437,61 +471,77 @@
 <!-- Title -->
 <div id="title-overlay">
   <h1>Maps to Stockton</h1>
-  <div class="subtitle">Photographs by Brandon Getty</div>
+  <div class="subtitle">A project by <a href="https://brandongettyphoto.com" target="_blank" rel="noopener">Brandon Getty</a></div>
 </div>
 
-<!-- Info bar -->
-<div id="info-bar">
-  <div class="photo-count" id="photo-count"></div>
-  <div class="location-label">Stockton, California</div>
-</div>
+<!-- Control panel -->
+<div id="controls">
+  <button class="ctrl-btn ctrl-zoom" id="ctrl-zoom-in" title="Zoom in"><span class="icon">+</span></button>
+  <button class="ctrl-btn ctrl-zoom" id="ctrl-zoom-out" title="Zoom out"><span class="icon">&minus;</span></button>
 
-<!-- Year filter -->
-<div id="year-filter">
-  <button class="year-btn active" data-year="all">All Years</button>
-  <button class="year-btn" data-year="2010">2010</button>
-  <button class="year-btn" data-year="2011">2011</button>
-  <button class="year-btn" data-year="2012">2012</button>
-  <button class="year-btn" data-year="2013">2013</button>
-  <button class="year-btn" data-year="2014">2014</button>
-  <button class="year-btn" data-year="2015">2015</button>
-  <button class="year-btn" data-year="2019">2019</button>
-  <button class="year-btn" data-year="2022">2022</button>
+  <div class="ctrl-sep"></div>
+
+  <button class="ctrl-btn" id="ctrl-theme" title="Toggle light/dark">
+    <span class="icon" id="theme-icon">&#9788;</span>
+  </button>
+
+  <div class="ctrl-sep"></div>
+
+  <button class="ctrl-btn" id="ctrl-years" title="Filter by year">Years</button>
+  <div id="years-panel">
+    <button class="year-btn active" data-year="all">All</button>
+    <button class="year-btn" data-year="2010">2010</button>
+    <button class="year-btn" data-year="2011">2011</button>
+    <button class="year-btn" data-year="2012">2012</button>
+    <button class="year-btn" data-year="2013">2013</button>
+    <button class="year-btn" data-year="2014">2014</button>
+    <button class="year-btn" data-year="2015">2015</button>
+    <button class="year-btn" data-year="2019">2019</button>
+    <button class="year-btn" data-year="2022">2022</button>
+  </div>
+  <button class="ctrl-btn" id="ctrl-oldest" title="Go to oldest">Oldest</button>
+  <button class="ctrl-btn" id="ctrl-newest" title="Go to newest">Newest</button>
+  <button class="ctrl-btn ctrl-last" id="ctrl-random" title="Random photo">Random</button>
 </div>
 
 <!-- Map -->
 <div id="map"></div>
 
-<!-- Photo panel -->
-<div id="photo-panel">
-  <button id="panel-close" aria-label="Close panel">&#x2715;</button>
-  <button class="panel-nav" id="nav-prev" aria-label="Previous photo">&#x2039;</button>
-  <button class="panel-nav" id="nav-next" aria-label="Next photo">&#x203A;</button>
-  <div id="panel-tabs">
-    <button class="panel-tab active" data-tab="photo">Photograph</button>
-    <button class="panel-tab" data-tab="streetview">Street View · Now</button>
-  </div>
-  <div id="panel-body">
-    <div id="photo-view" class="panel-view active">
-      <img id="panel-photo" src="" alt="" />
-      <div id="photo-caption">
-        <div class="location-name" id="caption-location"></div>
-        <div class="photo-date" id="caption-date"></div>
-        <div class="photo-tags" id="caption-tags"></div>
-        <a class="tumblr-link" id="caption-tumblr" href="#" target="_blank" rel="noopener">View on Tumblr</a>
+<!-- Overlay backdrop -->
+<div id="overlay-backdrop"></div>
+
+<!-- Photo overlay -->
+<div id="overlay">
+  <div id="overlay-content">
+    <button id="overlay-close" aria-label="Close">&#x2715;</button>
+    <div id="overlay-tabs">
+      <button class="overlay-tab active" data-tab="photo">Photograph · Then</button>
+      <button class="overlay-tab" data-tab="streetview">Street View · Now</button>
+    </div>
+    <div id="overlay-body">
+      <div id="photo-view" class="overlay-view active">
+        <img id="panel-photo" src="" alt="" />
+      </div>
+      <div id="streetview-view" class="overlay-view">
+        <div id="streetview-placeholder">
+          <div class="icon">&#x1F6F0;</div>
+          <p id="streetview-msg">
+            Street View requires a Google Maps API key.<br><br>
+            Set the <code>GOOGLE_API_KEY</code> variable in source to enable.
+          </p>
+        </div>
+        <iframe id="streetview-frame" style="display:none;" loading="lazy"></iframe>
       </div>
     </div>
-    <div id="streetview-view" class="panel-view">
-      <div id="streetview-placeholder">
-        <div class="icon">&#x1F6F0;</div>
-        <p id="streetview-msg">
-          Street View requires a Google Maps API key.<br><br>
-          Set the <code>GOOGLE_API_KEY</code> variable in source to enable.
-        </p>
-      </div>
-      <iframe id="streetview-frame" style="display:none;" loading="lazy"></iframe>
+    <div id="overlay-caption">
+      <div class="location-name" id="caption-location"></div>
+      <div class="photo-date" id="caption-date"></div>
+      <div class="photo-tags" id="caption-tags"></div>
+      <a class="tumblr-link" id="caption-tumblr" href="#" target="_blank" rel="noopener">View on Tumblr</a>
     </div>
   </div>
+  <button class="overlay-nav" id="nav-prev" aria-label="Previous photo">&#x2039;</button>
+  <button class="overlay-nav" id="nav-next" aria-label="Next photo">&#x203A;</button>
 </div>
 
 <script>
@@ -501,7 +551,7 @@
 const GOOGLE_API_KEY = 'AIzaSyB2y9l_4rZzinNZoH5SmijIK6NPpO3DCcs';
 
 // ═══════════════════════════════════════════
-//  PHOTO DATA (auto-generated)
+//  PHOTO DATA (loaded from photos.json)
 // ═══════════════════════════════════════════
 let PHOTOS = [];
 let appInitialized = false;
@@ -509,7 +559,6 @@ let appInitialized = false;
 function initializeApp() {
   if (appInitialized) return;
   appInitialized = true;
-  
 
 // ═══════════════════════════════════════════
 //  MAP SETUP
@@ -520,27 +569,48 @@ const darkLayer = L.tileLayer(
   'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
   { attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19 }
 );
-const satelliteLayer = L.tileLayer(
-  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-  { attribution: 'Tiles &copy; Esri', maxZoom: 19 }
-);
 const lightLayer = L.tileLayer(
   'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
   { attribution: '&copy; OpenStreetMap &copy; CARTO', maxZoom: 19 }
 );
 
+let isDark = true;
+
 const map = L.map('map', {
   center: STOCKTON,
   zoom: 14,
   layers: [darkLayer],
-  zoomControl: true,
+  zoomControl: false,
 });
 
-L.control.layers({
-  'Dark': darkLayer,
-  'Satellite': satelliteLayer,
-  'Light': lightLayer
-}, null, { position: 'topright' }).addTo(map);
+// ═══════════════════════════════════════════
+//  CONTROLS
+// ═══════════════════════════════════════════
+
+// Zoom
+document.getElementById('ctrl-zoom-in').addEventListener('click', () => map.zoomIn());
+document.getElementById('ctrl-zoom-out').addEventListener('click', () => map.zoomOut());
+
+// Theme toggle
+const themeIcon = document.getElementById('theme-icon');
+document.getElementById('ctrl-theme').addEventListener('click', () => {
+  if (isDark) {
+    map.removeLayer(darkLayer);
+    map.addLayer(lightLayer);
+    themeIcon.innerHTML = '&#9790;'; // moon
+  } else {
+    map.removeLayer(lightLayer);
+    map.addLayer(darkLayer);
+    themeIcon.innerHTML = '&#9788;'; // sun
+  }
+  isDark = !isDark;
+});
+
+// Years dropdown
+const yearsPanel = document.getElementById('years-panel');
+document.getElementById('ctrl-years').addEventListener('click', () => {
+  yearsPanel.classList.toggle('open');
+});
 
 // ═══════════════════════════════════════════
 //  MARKERS & CLUSTERING
@@ -564,8 +634,8 @@ const clusterGroup = L.markerClusterGroup({
 });
 
 let activeMarkerEl = null;
-const markerMap = new Map(); // photo id -> { marker, photo }
-let visiblePhotos = [...PHOTOS]; // filtered list
+const markerMap = new Map();
+let visiblePhotos = [...PHOTOS];
 
 function createMarkers(photos) {
   clusterGroup.clearLayers();
@@ -574,7 +644,7 @@ function createMarkers(photos) {
   photos.forEach(photo => {
     const icon = L.divIcon({
       className: '',
-      html: `<div class="photo-marker" data-id="${photo.id}"></div>`,
+      html: '<div class="photo-marker" data-id="' + photo.id + '"></div>',
       iconSize: [10, 10],
       iconAnchor: [5, 5]
     });
@@ -586,14 +656,12 @@ function createMarkers(photos) {
         offset: [0, -8]
       });
 
-    marker.on('click', () => openPanel(photo));
+    marker.on('click', () => openOverlay(photo));
     clusterGroup.addLayer(marker);
     markerMap.set(photo.id, { marker, photo });
   });
 
   map.addLayer(clusterGroup);
-  document.getElementById('photo-count').textContent =
-    `${photos.length} photograph${photos.length !== 1 ? 's' : ''}`;
 }
 
 // ═══════════════════════════════════════════
@@ -605,11 +673,15 @@ function getYear(dateStr) {
   return match ? match[1] : null;
 }
 
+function getYearNum(dateStr) {
+  const y = getYear(dateStr);
+  return y ? parseInt(y) : 9999;
+}
+
 document.querySelectorAll('.year-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-
     const year = btn.dataset.year;
     if (year === 'all') {
       visiblePhotos = [...PHOTOS];
@@ -617,14 +689,34 @@ document.querySelectorAll('.year-btn').forEach(btn => {
       visiblePhotos = PHOTOS.filter(p => getYear(p.date) === year);
     }
     createMarkers(visiblePhotos);
-    closePanel();
+    closeOverlay();
   });
 });
 
+// Oldest / Newest / Random
+document.getElementById('ctrl-oldest').addEventListener('click', () => {
+  if (visiblePhotos.length === 0) return;
+  const sorted = [...visiblePhotos].sort((a, b) => getYearNum(a.date) - getYearNum(b.date));
+  openOverlay(sorted[0]);
+});
+
+document.getElementById('ctrl-newest').addEventListener('click', () => {
+  if (visiblePhotos.length === 0) return;
+  const sorted = [...visiblePhotos].sort((a, b) => getYearNum(b.date) - getYearNum(a.date));
+  openOverlay(sorted[0]);
+});
+
+document.getElementById('ctrl-random').addEventListener('click', () => {
+  if (visiblePhotos.length === 0) return;
+  const idx = Math.floor(Math.random() * visiblePhotos.length);
+  openOverlay(visiblePhotos[idx]);
+});
+
 // ═══════════════════════════════════════════
-//  PANEL
+//  OVERLAY
 // ═══════════════════════════════════════════
-const panel = document.getElementById('photo-panel');
+const backdrop = document.getElementById('overlay-backdrop');
+const overlay = document.getElementById('overlay');
 const panelPhoto = document.getElementById('panel-photo');
 const captionLocation = document.getElementById('caption-location');
 const captionDate = document.getElementById('caption-date');
@@ -635,25 +727,30 @@ const streetviewPlaceholder = document.getElementById('streetview-placeholder');
 
 let currentPhoto = null;
 
-let isNavigating = false;
+function highlightMarker(photo) {
+  if (activeMarkerEl) activeMarkerEl.classList.remove('active');
+  activeMarkerEl = null;
+  const entry = markerMap.get(photo.id);
+  if (entry) {
+    // Ensure the marker is visible (not inside a cluster)
+    clusterGroup.zoomToShowLayer(entry.marker, () => {
+      const el = entry.marker.getElement();
+      if (el) {
+        const dot = el.querySelector('.photo-marker');
+        if (dot) { dot.classList.add('active'); activeMarkerEl = dot; }
+      }
+    });
+  }
+}
 
-function openPanel(photo, opts = {}) {
-  const wasOpen = panel.classList.contains('open');
+function openOverlay(photo, opts = {}) {
   const isNav = opts.fromNav || false;
   currentPhoto = photo;
 
-  // Highlight marker (may be inside cluster, so fail gracefully)
-  if (activeMarkerEl) activeMarkerEl.classList.remove('active');
-  const entry = markerMap.get(photo.id);
-  if (entry) {
-    const el = entry.marker.getElement();
-    if (el) {
-      const dot = el.querySelector('.photo-marker');
-      if (dot) { dot.classList.add('active'); activeMarkerEl = dot; }
-    }
-  }
+  // Highlight marker with pulse
+  highlightMarker(photo);
 
-  // Photo — fade out during load to prevent flash
+  // Photo — fade out during load
   panelPhoto.classList.add('loading');
   const newImg = new Image();
   newImg.onload = () => {
@@ -678,10 +775,7 @@ function openPanel(photo, opts = {}) {
     captionTumblr.style.display = 'none';
   }
 
-  // Scroll photo view back to top
-  document.getElementById('photo-view').scrollTop = 0;
-
-  // Street View — only reload if not rapid-navigating
+  // Street View
   if (!isNav) {
     if (GOOGLE_API_KEY) {
       streetviewPlaceholder.style.display = 'none';
@@ -689,28 +783,27 @@ function openPanel(photo, opts = {}) {
       const h = photo.heading != null ? photo.heading : 0;
       const p = photo.pitch != null ? photo.pitch : 0;
       const f = photo.fov != null ? photo.fov : 90;
-      streetviewFrame.src = `https://www.google.com/maps/embed/v1/streetview?key=${GOOGLE_API_KEY}&location=${photo.lat},${photo.lng}&heading=${h}&pitch=${p}&fov=${f}`;
+      streetviewFrame.src = 'https://www.google.com/maps/embed/v1/streetview?key=' + GOOGLE_API_KEY + '&location=' + photo.lat + ',' + photo.lng + '&heading=' + h + '&pitch=' + p + '&fov=' + f;
     } else {
       streetviewFrame.style.display = 'none';
       streetviewPlaceholder.style.display = 'flex';
     }
   }
 
-  if (!wasOpen) switchTab('photo');
-  panel.classList.add('open');
+  // Open overlay
+  if (!backdrop.classList.contains('open')) {
+    switchTab('photo');
+  }
+  backdrop.classList.add('open');
+  overlay.classList.add('open');
 
-  // Pan map — skip rapid panning during arrow key navigation
+  // Pan map to marker
   if (!isNav) {
-    const panelWidth = window.innerWidth <= 700 ? 0 : 260;
     map.panTo([photo.lat, photo.lng], { animate: true });
-    setTimeout(() => map.panBy([-panelWidth, 0], { animate: true }), 100);
   } else {
-    // Debounced pan: only pan after user stops navigating for 400ms
-    clearTimeout(openPanel._panTimer);
-    openPanel._panTimer = setTimeout(() => {
-      const panelWidth = window.innerWidth <= 700 ? 0 : 260;
+    clearTimeout(openOverlay._panTimer);
+    openOverlay._panTimer = setTimeout(() => {
       map.panTo([photo.lat, photo.lng], { animate: true, duration: 0.3 });
-      setTimeout(() => map.panBy([-panelWidth, 0], { animate: true, duration: 0.3 }), 80);
       // Reload street view after settling
       if (GOOGLE_API_KEY && currentPhoto) {
         streetviewPlaceholder.style.display = 'none';
@@ -718,24 +811,24 @@ function openPanel(photo, opts = {}) {
         const h2 = currentPhoto.heading != null ? currentPhoto.heading : 0;
         const p2 = currentPhoto.pitch != null ? currentPhoto.pitch : 0;
         const f2 = currentPhoto.fov != null ? currentPhoto.fov : 90;
-        streetviewFrame.src = `https://www.google.com/maps/embed/v1/streetview?key=${GOOGLE_API_KEY}&location=${currentPhoto.lat},${currentPhoto.lng}&heading=${h2}&pitch=${p2}&fov=${f2}`;
+        streetviewFrame.src = 'https://www.google.com/maps/embed/v1/streetview?key=' + GOOGLE_API_KEY + '&location=' + currentPhoto.lat + ',' + currentPhoto.lng + '&heading=' + h2 + '&pitch=' + p2 + '&fov=' + f2;
       }
     }, 400);
   }
 }
 
-function closePanel() {
-  panel.classList.remove('open');
+function closeOverlay() {
+  backdrop.classList.remove('open');
+  overlay.classList.remove('open');
   if (activeMarkerEl) { activeMarkerEl.classList.remove('active'); activeMarkerEl = null; }
   currentPhoto = null;
   streetviewFrame.src = '';
 }
 
-document.getElementById('panel-close').addEventListener('click', closePanel);
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
-map.on('click', e => {
-  if (panel.classList.contains('open') && !e.originalEvent?.target?.closest('.photo-marker')) closePanel();
-});
+// Close events
+document.getElementById('overlay-close').addEventListener('click', closeOverlay);
+backdrop.addEventListener('click', closeOverlay);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeOverlay(); });
 
 // Nav
 function navigate(dir) {
@@ -743,11 +836,11 @@ function navigate(dir) {
   const idx = visiblePhotos.findIndex(p => p.id === currentPhoto.id);
   if (idx === -1) return;
   const next = (idx + dir + visiblePhotos.length) % visiblePhotos.length;
-  openPanel(visiblePhotos[next], { fromNav: true });
+  openOverlay(visiblePhotos[next], { fromNav: true });
 }
 
-document.getElementById('nav-prev').addEventListener('click', () => navigate(-1));
-document.getElementById('nav-next').addEventListener('click', () => navigate(1));
+document.getElementById('nav-prev').addEventListener('click', e => { e.stopPropagation(); navigate(-1); });
+document.getElementById('nav-next').addEventListener('click', e => { e.stopPropagation(); navigate(1); });
 document.addEventListener('keydown', e => {
   if (!currentPhoto) return;
   if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); navigate(1); }
@@ -756,16 +849,22 @@ document.addEventListener('keydown', e => {
 
 // Tabs
 function switchTab(name) {
-  document.querySelectorAll('.panel-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
-  document.querySelectorAll('.panel-view').forEach(v => v.classList.toggle('active', v.id === `${name}-view`));
+  document.querySelectorAll('.overlay-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  document.querySelectorAll('.overlay-view').forEach(v => v.classList.toggle('active', v.id === name + '-view'));
 }
-document.querySelectorAll('.panel-tab').forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
+document.querySelectorAll('.overlay-tab').forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
 
 // ═══════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════
 createMarkers(PHOTOS);
 visiblePhotos = [...PHOTOS];
+
+// Open a random photo on first visit
+if (PHOTOS.length > 0) {
+  const randomIdx = Math.floor(Math.random() * PHOTOS.length);
+  setTimeout(() => openOverlay(PHOTOS[randomIdx]), 1200);
+}
 
   // Dismiss loading
   setTimeout(() => document.getElementById('loading').classList.add('done'), 800);
@@ -780,9 +879,10 @@ fetch('photos.json')
   })
   .catch(err => {
     console.error('Failed to load photo data:', err);
-    // Dismiss loading overlay even on error
     setTimeout(() => document.getElementById('loading').classList.add('done'), 800);
     setTimeout(() => document.getElementById('loading').remove(), 1500);
   });
 
 </script>
+</body>
+</html>
