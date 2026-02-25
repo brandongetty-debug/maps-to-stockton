@@ -628,7 +628,7 @@
 <!-- Title -->
 <div id="title-overlay">
   <h1>Maps to Stockton</h1>
-  <div class="subtitle">A project by <a href="https://www.brandongettyphoto.com" target="_blank" rel="noopener">Brandon Getty</a></div>
+  <div class="subtitle">A <a href="https://www.brandongettyphoto.com" target="_blank" rel="noopener">Brandon Getty</a> project</div>
 </div>
 
 <!-- Control panel -->
@@ -1137,12 +1137,6 @@ document.querySelectorAll('.panel-tab').forEach(t => t.addEventListener('click',
 // ═══════════════════════════════════════════
 createMarkers(PHOTOS);
 visiblePhotos = [...PHOTOS];
-
-// Open a random photo on first visit
-if (PHOTOS.length > 0) {
-  const randomIdx = Math.floor(Math.random() * PHOTOS.length);
-  setTimeout(() => openPanel(PHOTOS[randomIdx]), 1200);
-}
 
   // Dismiss loading
   setTimeout(() => document.getElementById('loading').classList.add('done'), 800);
