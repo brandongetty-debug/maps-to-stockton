@@ -332,35 +332,36 @@
     width: 55%;
     height: 100vh;
     z-index: 2000;
-    background: #111;
+    background: #0a0a0a;
     transform: translateX(100%);
     transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s;
     display: flex;
     flex-direction: column;
     box-shadow: -4px 0 40px rgba(0,0,0,0.6);
     overflow: hidden;
+    will-change: transform;
   }
   #photo-panel.open { transform: translateX(0); }
 
   /* Light mode panel */
-  body.light-mode #photo-panel { background: #f0efed; }
+  body.light-mode #photo-panel { background: #e4e2df; }
   body.light-mode #panel-tabs { background: #e8e6e3; border-bottom-color: #d4d2cf; }
   body.light-mode .panel-tab { color: rgba(0,0,0,0.35); }
   body.light-mode .panel-tab:hover { color: rgba(0,0,0,0.6); }
-  body.light-mode .panel-tab.active { color: #1a1a1a; border-bottom-color: #1a1a1a; }
+  body.light-mode .panel-tab.active { color: #1a1a1a; border-bottom: 2px solid #c0392b; background: rgba(0,0,0,0.03); }
   body.light-mode #photo-view { background: #e4e2df; }
   body.light-mode #photo-caption .location-name { color: #1a1a1a; }
   body.light-mode #photo-caption .photo-date { color: rgba(0,0,0,0.45); }
   body.light-mode #photo-caption .photo-tags { color: rgba(0,0,0,0.25); }
   body.light-mode #photo-caption .tumblr-link { color: rgba(0,0,0,0.35); border-bottom-color: rgba(0,0,0,0.15); }
   body.light-mode #photo-caption .tumblr-link:hover { color: rgba(0,0,0,0.6); border-color: rgba(0,0,0,0.3); }
-  body.light-mode #panel-close { background: rgba(0,0,0,0.06); color: rgba(0,0,0,0.4); }
-  body.light-mode #panel-close:hover { background: rgba(0,0,0,0.12); color: #1a1a1a; }
-  body.light-mode .panel-nav { background: rgba(255,255,255,0.6); color: rgba(0,0,0,0.5); }
-  body.light-mode .panel-nav:hover { background: rgba(255,255,255,0.85); color: #1a1a1a; }
+  body.light-mode #panel-close { color: #c0392b; }
+  body.light-mode #panel-close:hover { color: #e74c3c; }
+  body.light-mode .panel-nav { background: rgba(255,255,255,0.4); color: #c0392b; }
+  body.light-mode .panel-nav:hover { background: rgba(255,255,255,0.7); color: #e74c3c; }
   body.light-mode #streetview-view { background: #e4e2df; }
 
-  /* Close button — aligned with tab bar */
+  /* Close button — no bubble, accent color */
   #panel-close {
     position: absolute;
     top: 5px; left: 20px;
@@ -368,18 +369,19 @@
     width: 36px; height: 36px;
     border-radius: 50%;
     border: none;
-    background: rgba(255,255,255,0.06);
-    color: rgba(255,255,255,0.5);
-    font-size: 16px;
+    background: none;
+    color: #d63031;
+    font-size: 18px;
+    font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
   }
-  #panel-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
+  #panel-close:hover { color: #ff4444; }
 
-  /* Nav arrows — moved inward */
+  /* Nav arrows — accent color, no heavy bg */
   .panel-nav {
     position: absolute;
     top: 50%;
@@ -387,9 +389,10 @@
     width: 44px; height: 44px;
     border-radius: 50%;
     border: none;
-    background: rgba(0,0,0,0.4);
-    color: rgba(255,255,255,0.6);
-    font-size: 22px;
+    background: rgba(0,0,0,0.25);
+    color: #d63031;
+    font-size: 24px;
+    font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -398,7 +401,7 @@
     transition: all 0.2s;
     backdrop-filter: blur(8px);
   }
-  .panel-nav:hover { background: rgba(0,0,0,0.6); color: #fff; }
+  .panel-nav:hover { background: rgba(0,0,0,0.45); color: #ff4444; }
   #nav-prev { left: 34px; }
   #nav-next { right: 34px; }
 
@@ -427,7 +430,11 @@
     background: none;
   }
   .panel-tab:hover { color: rgba(255,255,255,0.7); }
-  .panel-tab.active { color: #fff; border-bottom-color: #fff; }
+  .panel-tab.active {
+    color: #fff;
+    border-bottom: 2px solid #d63031;
+    background: rgba(255,255,255,0.04);
+  }
 
   /* Panel body */
   #panel-body {
@@ -460,9 +467,10 @@
     max-height: 65vh;
     object-fit: contain;
     border-radius: 2px;
-    transition: opacity 0.2s ease;
+    transition: opacity 0.25s ease;
+    will-change: opacity;
   }
-  #photo-view img.loading { opacity: 0.3; }
+  #photo-view img.loading { opacity: 0; }
 
   /* Caption */
   #photo-caption {
@@ -667,6 +675,17 @@
     .ctrl-btn { width: 56px; height: 34px; font-size: 10px; }
     .ctrl-zoom { height: 40px; font-size: 22px; }
     .year-btn { width: 56px; height: 28px; font-size: 9px; }
+
+    /* Mobile image optimization */
+    #photo-view { padding: 12px; }
+    #photo-view img {
+      max-height: 55vh;
+      transition: opacity 0.2s ease;
+    }
+    .panel-nav { width: 38px; height: 38px; font-size: 20px; }
+    #nav-prev { left: 12px; }
+    #nav-next { right: 12px; }
+    #panel-close { top: 4px; left: 10px; }
   }
 </style>
 </head>
@@ -1028,16 +1047,20 @@ function openPanel(photo, opts = {}) {
     pushNavHistory(photo);
   }
 
-  // Photo — fade during load
+  // Photo — fade out, preload, swap, fade in
   panelPhoto.classList.add('loading');
   const newImg = new Image();
   newImg.onload = () => {
-    panelPhoto.src = photo.imageUrl;
+    // Only swap after fully loaded to prevent stacking
+    panelPhoto.src = newImg.src;
     panelPhoto.alt = photo.title;
+    // Force reflow then fade in
+    void panelPhoto.offsetWidth;
     panelPhoto.classList.remove('loading');
   };
   newImg.onerror = () => {
     panelPhoto.src = photo.imageUrl;
+    panelPhoto.alt = photo.title;
     panelPhoto.classList.remove('loading');
   };
   newImg.src = photo.imageUrl;
@@ -1125,54 +1148,52 @@ map.on('click', e => {
 });
 
 // Nav — sequential by default, random only after Random button
+// Helper: find photo by id across ALL photos (not just current filter)
+function findPhotoById(id) {
+  return PHOTOS.find(p => p.id === id) || null;
+}
+
 function navigateNext() {
   if (!currentPhoto || visiblePhotos.length === 0) return;
 
   // If we've gone back and there's forward history, replay it
   if (navHistoryIdx < navHistory.length - 1) {
     navHistoryIdx++;
-    const nextId = navHistory[navHistoryIdx];
-    const entry = markerMap.get(nextId);
-    if (entry) {
-      openPanel(entry.photo, { fromNav: true, skipHistory: true });
+    const nextPhoto = findPhotoById(navHistory[navHistoryIdx]);
+    if (nextPhoto) {
+      openPanel(nextPhoto, { fromNav: true, skipHistory: true });
       return;
     }
   }
 
   if (shuffleMode) {
-    // Random mode: pick a random photo
     const next = getRandomPhoto(currentPhoto.id);
     if (next) openPanel(next, { fromNav: true });
   } else {
     // Sequential mode: go to next in visiblePhotos
     const idx = visiblePhotos.findIndex(p => p.id === currentPhoto.id);
-    if (idx === -1) return;
-    const next = (idx + 1) % visiblePhotos.length;
+    const next = (idx === -1) ? 0 : (idx + 1) % visiblePhotos.length;
     openPanel(visiblePhotos[next], { fromNav: true });
   }
 }
 
 function navigatePrev() {
-  if (!currentPhoto) return;
+  if (!currentPhoto || visiblePhotos.length === 0) return;
 
   // If there's back history, go back
   if (navHistoryIdx > 0) {
     navHistoryIdx--;
-    const prevId = navHistory[navHistoryIdx];
-    const entry = markerMap.get(prevId);
-    if (entry) {
-      openPanel(entry.photo, { fromNav: true, skipHistory: true });
+    const prevPhoto = findPhotoById(navHistory[navHistoryIdx]);
+    if (prevPhoto) {
+      openPanel(prevPhoto, { fromNav: true, skipHistory: true });
       return;
     }
   }
 
-  // If no history (sequential mode, first photo), wrap to previous
-  if (!shuffleMode) {
-    const idx = visiblePhotos.findIndex(p => p.id === currentPhoto.id);
-    if (idx === -1) return;
-    const prev = (idx - 1 + visiblePhotos.length) % visiblePhotos.length;
-    openPanel(visiblePhotos[prev], { fromNav: true });
-  }
+  // Sequential fallback: go to previous in visiblePhotos
+  const idx = visiblePhotos.findIndex(p => p.id === currentPhoto.id);
+  const prev = (idx <= 0) ? visiblePhotos.length - 1 : idx - 1;
+  openPanel(visiblePhotos[prev], { fromNav: true });
 }
 
 document.getElementById('nav-prev').addEventListener('click', () => navigatePrev());
