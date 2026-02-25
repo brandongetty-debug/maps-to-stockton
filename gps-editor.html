@@ -6,6 +6,50 @@
 <title>Maps to Stockton — CMS</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  /* ── Password gate ── */
+  #pw-gate {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: #111;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+  #pw-gate.hidden { display: none; }
+  #pw-gate label {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 12px;
+  }
+  #pw-gate input {
+    width: 240px;
+    padding: 10px 14px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 6px;
+    color: #e0e0e0;
+    font-size: 14px;
+    font-family: inherit;
+    text-align: center;
+    outline: none;
+  }
+  #pw-gate input:focus { border-color: #5cbdb9; }
+  #pw-gate .pw-error {
+    margin-top: 10px;
+    font-size: 11px;
+    color: #ff6b6b;
+    letter-spacing: 0.04em;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  #pw-gate .pw-error.visible { opacity: 1; }
+
   body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     background: #111;
@@ -476,6 +520,13 @@
 </head>
 <body>
 
+<!-- Password gate -->
+<div id="pw-gate">
+  <label>Maps to Stockton CMS</label>
+  <input type="password" id="pw-input" placeholder="Password" autofocus>
+  <div class="pw-error" id="pw-error">Incorrect password</div>
+</div>
+
 <div id="toast"></div>
 
 <!-- Sidebar -->
@@ -620,6 +671,40 @@
     </div>
   </div>
 </div>
+
+<script>
+/* ── Password gate ── */
+(function() {
+  const PASS_HASH = '27d9f0710dbd551d6177a43184ff8eb140476887f00d5398dd1341131d57efcc';
+  const gate = document.getElementById('pw-gate');
+  const input = document.getElementById('pw-input');
+  const error = document.getElementById('pw-error');
+  const SESSION_KEY = 'mts_cms_auth';
+
+  async function sha256(str) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  // Check if already authenticated this session
+  if (sessionStorage.getItem(SESSION_KEY) === 'true') {
+    gate.classList.add('hidden');
+  }
+
+  input.addEventListener('keydown', async function(e) {
+    if (e.key !== 'Enter') return;
+    const hash = await sha256(input.value);
+    if (hash === PASS_HASH) {
+      sessionStorage.setItem(SESSION_KEY, 'true');
+      gate.classList.add('hidden');
+    } else {
+      error.classList.add('visible');
+      input.value = '';
+      setTimeout(() => error.classList.remove('visible'), 2000);
+    }
+  });
+})();
+</script>
 
 <script>
 // ═══════════════════════════════════════════
