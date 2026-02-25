@@ -953,13 +953,13 @@ document.querySelectorAll('.year-btn').forEach(btn => {
       streetviewFrame.src = '';
     }
 
-    // Brief pause for panel close, then rebuild + fly
+    // Brief pause for panel close, then rebuild + snap to bounds
     setTimeout(() => {
       map.invalidateSize({ animate: false });
       createMarkers(visiblePhotos);
       if (visiblePhotos.length > 0) {
         const bounds = clusterGroup.getBounds().pad(0.15);
-        map.flyToBounds(bounds, { animate: true, duration: 0.8, easeLinearity: 0.25 });
+        map.fitBounds(bounds, { animate: false });
       }
     }, wasOpen ? 120 : 10);
   });
