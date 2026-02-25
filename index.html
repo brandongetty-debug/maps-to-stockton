@@ -437,15 +437,35 @@
     box-shadow: 0 0 12px rgba(255,68,68,0.6);
   }
   .photo-marker.active {
-    background: #ff4444;
-    transform: scale(2.2);
-    box-shadow: 0 0 20px rgba(255,68,68,0.8), 0 0 40px rgba(255,68,68,0.3);
-    animation: marker-pulse 1.5s ease-in-out infinite;
+    background: #fff;
+    border-color: #ff4444;
+    transform: scale(2.5);
+    box-shadow: 0 0 12px rgba(255,68,68,0.9), 0 0 30px rgba(255,68,68,0.5);
+    z-index: 9000 !important;
   }
 
-  @keyframes marker-pulse {
-    0%, 100% { box-shadow: 0 0 20px rgba(255,68,68,0.8), 0 0 40px rgba(255,68,68,0.3); transform: scale(2.2); }
-    50% { box-shadow: 0 0 28px rgba(255,68,68,1), 0 0 56px rgba(255,68,68,0.5); transform: scale(2.6); }
+  /* Ripple ping rings — injected via JS as sibling divs */
+  .marker-ping {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 10px; height: 10px;
+    margin-top: -5px; margin-left: -5px;
+    border-radius: 50%;
+    border: 2px solid #ff4444;
+    background: transparent;
+    pointer-events: none;
+    animation: ping-ripple 2s ease-out infinite;
+    z-index: 8999;
+  }
+  .marker-ping.ping2 {
+    animation-delay: 0.6s;
+  }
+  .marker-ping.ping3 {
+    animation-delay: 1.2s;
+  }
+  @keyframes ping-ripple {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(6); opacity: 0; }
   }
 
   /* Cluster styling */
@@ -576,7 +596,7 @@
   <div class="info-tooltip-wrap">
     <button class="ctrl-btn" id="ctrl-info" title="About this project">Info</button>
     <div class="info-card" id="info-card">
-      <p>Ongoing work about my hometown of Stockton, California. 2010&ndash;?</p>
+      <p>Ongoing work about my hometown of Stockton, California. 2011&ndash;?</p>
       <span class="info-desktop">Best viewed on desktop.</span>
     </div>
   </div>
@@ -584,7 +604,6 @@
   <button class="ctrl-btn" id="ctrl-years" title="Filter by year">Years</button>
   <div id="years-panel">
     <button class="year-btn active" data-year="all">All</button>
-    <button class="year-btn" data-year="2010">2010</button>
     <button class="year-btn" data-year="2011">2011</button>
     <button class="year-btn" data-year="2012">2012</button>
     <button class="year-btn" data-year="2013">2013</button>
@@ -843,18 +862,50 @@ const streetviewFrame = document.getElementById('streetview-frame');
 const streetviewPlaceholder = document.getElementById('streetview-placeholder');
 
 let currentPhoto = null;
+let activePingEls = []; // track injected ping ripple elements
 
-function highlightMarker(photo) {
+function clearActiveMarker() {
   if (activeMarkerEl) activeMarkerEl.classList.remove('active');
   activeMarkerEl = null;
-  const entry = markerMap.get(photo.id);
-  if (entry) {
-    const el = entry.marker.getElement();
-    if (el) {
-      const dot = el.querySelector('.photo-marker');
-      if (dot) { dot.classList.add('active'); activeMarkerEl = dot; }
+  // Remove any existing ping ripples
+  activePingEls.forEach(el => el.remove());
+  activePingEls = [];
+}
+
+function applyMarkerHighlight(marker) {
+  clearActiveMarker();
+  const el = marker.getElement();
+  if (el) {
+    const dot = el.querySelector('.photo-marker');
+    if (dot) {
+      dot.classList.add('active');
+      activeMarkerEl = dot;
+      // Inject ping ripple rings as siblings
+      const parent = dot.parentElement;
+      if (parent) {
+        ['ping1', 'ping2', 'ping3'].forEach((cls, i) => {
+          const ring = document.createElement('div');
+          ring.className = 'marker-ping' + (i > 0 ? ' ping' + (i + 1) : '');
+          parent.appendChild(ring);
+          activePingEls.push(ring);
+        });
+      }
     }
   }
+}
+
+function highlightMarker(photo) {
+  clearActiveMarker();
+  const entry = markerMap.get(photo.id);
+  if (!entry) return;
+
+  const marker = entry.marker;
+
+  // Use zoomToShowLayer to ensure marker is unclustered and visible
+  clusterGroup.zoomToShowLayer(marker, () => {
+    // After zoom/uncluster completes, apply highlight
+    setTimeout(() => applyMarkerHighlight(marker), 100);
+  });
 }
 
 function openPanel(photo, opts = {}) {
@@ -867,9 +918,6 @@ function openPanel(photo, opts = {}) {
   if (!skipHistory) {
     pushNavHistory(photo);
   }
-
-  // Highlight marker
-  highlightMarker(photo);
 
   // Photo — fade during load
   panelPhoto.classList.add('loading');
@@ -919,15 +967,18 @@ function openPanel(photo, opts = {}) {
   panel.classList.add('open');
   document.body.classList.add('panel-open');
 
-  // Invalidate map size after transition, then fly to street-level zoom
+  // Invalidate map size after transition, then zoom to show marker unclustered
   const NAV_ZOOM = 17; // street-level zoom for context
   setTimeout(() => {
     map.invalidateSize({ animate: true });
+    // First fly to street-level so the marker unclusters
     const currentZoom = map.getZoom();
     const targetZoom = Math.max(currentZoom, NAV_ZOOM);
-    setTimeout(() => {
-      map.flyTo([photo.lat, photo.lng], targetZoom, { animate: true, duration: isNav ? 0.6 : 1.0 });
-    }, 100);
+    map.flyTo([photo.lat, photo.lng], targetZoom, { animate: true, duration: isNav ? 0.6 : 1.0 });
+    // After the fly completes, highlight the (now unclustered) marker
+    map.once('moveend', () => {
+      highlightMarker(photo);
+    });
   }, isNav ? 50 : 480);
 
   if (isNav) {
@@ -949,7 +1000,7 @@ function openPanel(photo, opts = {}) {
 function closePanel() {
   panel.classList.remove('open');
   document.body.classList.remove('panel-open');
-  if (activeMarkerEl) { activeMarkerEl.classList.remove('active'); activeMarkerEl = null; }
+  clearActiveMarker();
   currentPhoto = null;
   shuffleMode = false;  // Reset to sequential when panel closes
   streetviewFrame.src = '';
