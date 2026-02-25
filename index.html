@@ -42,7 +42,7 @@
   }
   #title-overlay h1 {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-weight: 500;
+    font-weight: 700;
     font-size: 28px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -53,7 +53,7 @@
   }
   #title-overlay .subtitle {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-weight: 300;
+    font-weight: 400;
     font-size: 12px;
     letter-spacing: 0.15em;
     text-transform: uppercase;
@@ -175,12 +175,7 @@
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.06em;
-    color: rgba(255,255,255,0.5);
-    animation: blink-text 1s step-end infinite;
-  }
-  @keyframes blink-text {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
+    color: #e8c547;
   }
   /* Arrow pointing left toward the button */
   .info-card::before {
@@ -264,7 +259,7 @@
   /* Close button — aligned with tab bar */
   #panel-close {
     position: absolute;
-    top: 5px; left: 10px;
+    top: 5px; left: 20px;
     z-index: 10;
     width: 36px; height: 36px;
     border-radius: 50%;
@@ -300,8 +295,8 @@
     backdrop-filter: blur(8px);
   }
   .panel-nav:hover { background: rgba(0,0,0,0.6); color: #fff; }
-  #nav-prev { left: 24px; }
-  #nav-next { right: 24px; }
+  #nav-prev { left: 34px; }
+  #nav-next { right: 34px; }
 
   /* Tab switcher */
   #panel-tabs {
@@ -924,10 +919,15 @@ function openPanel(photo, opts = {}) {
   panel.classList.add('open');
   document.body.classList.add('panel-open');
 
-  // Invalidate map size after transition, then pan
+  // Invalidate map size after transition, then fly to street-level zoom
+  const NAV_ZOOM = 17; // street-level zoom for context
   setTimeout(() => {
     map.invalidateSize({ animate: true });
-    setTimeout(() => map.panTo([photo.lat, photo.lng], { animate: true }), 100);
+    const currentZoom = map.getZoom();
+    const targetZoom = Math.max(currentZoom, NAV_ZOOM);
+    setTimeout(() => {
+      map.flyTo([photo.lat, photo.lng], targetZoom, { animate: true, duration: isNav ? 0.6 : 1.0 });
+    }, 100);
   }, isNav ? 50 : 480);
 
   if (isNav) {
