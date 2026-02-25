@@ -860,6 +860,9 @@ const clusterGroup = L.markerClusterGroup({
   spiderfyOnMaxZoom: true,
   showCoverageOnHover: false,
   zoomToBoundsOnClick: true,
+  animate: true,
+  animateAddingMarkers: false,
+  disableClusteringAtZoom: 19,
   iconCreateFunction: function(cluster) {
     const count = cluster.getChildCount();
     let size = 'small';
@@ -877,10 +880,18 @@ let activeMarkerEl = null;
 const markerMap = new Map();
 let visiblePhotos = [...PHOTOS];
 
+let clusterOnMap = false;
+
 function createMarkers(photos) {
+  // Remove from map first to prevent visual jitter during rebuild
+  if (clusterOnMap) {
+    map.removeLayer(clusterGroup);
+  }
   clusterGroup.clearLayers();
   markerMap.clear();
 
+  // Batch-build all markers, then add to cluster group at once
+  const markers = [];
   photos.forEach(photo => {
     const icon = L.divIcon({
       className: '',
@@ -897,11 +908,13 @@ function createMarkers(photos) {
       });
 
     marker.on('click', () => openPanel(photo));
-    clusterGroup.addLayer(marker);
+    markers.push(marker);
     markerMap.set(photo.id, { marker, photo });
   });
 
+  clusterGroup.addLayers(markers);  // bulk add — much faster, no per-marker animation
   map.addLayer(clusterGroup);
+  clusterOnMap = true;
 }
 
 // ═══════════════════════════════════════════
@@ -928,13 +941,27 @@ document.querySelectorAll('.year-btn').forEach(btn => {
     } else {
       visiblePhotos = PHOTOS.filter(p => getYear(p.date) === year);
     }
-    createMarkers(visiblePhotos);
-    closePanel();
-    // Zoom out to fit all points for the selected year
-    if (visiblePhotos.length > 0) {
-      const bounds = clusterGroup.getBounds().pad(0.15);
-      map.flyToBounds(bounds, { animate: true, duration: 0.8 });
+
+    // Close panel immediately (without triggering its delayed invalidateSize)
+    const wasOpen = panel.classList.contains('open');
+    if (wasOpen) {
+      panel.classList.remove('open');
+      document.body.classList.remove('panel-open');
+      clearActiveMarker();
+      currentPhoto = null;
+      shuffleMode = false;
+      streetviewFrame.src = '';
     }
+
+    // Brief pause for panel close, then rebuild + fly
+    setTimeout(() => {
+      map.invalidateSize({ animate: false });
+      createMarkers(visiblePhotos);
+      if (visiblePhotos.length > 0) {
+        const bounds = clusterGroup.getBounds().pad(0.15);
+        map.flyToBounds(bounds, { animate: true, duration: 0.8, easeLinearity: 0.25 });
+      }
+    }, wasOpen ? 120 : 10);
   });
 });
 
