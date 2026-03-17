@@ -639,7 +639,7 @@
   }
   .leaflet-control-attribution a { color: rgba(255,255,255,0.4) !important; }
 
-  /* Loading overlay */
+  /* Loading overlay — minimal, fast fade */
   #loading {
     position: fixed;
     inset: 0;
@@ -649,24 +649,9 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    transition: opacity 0.6s;
+    transition: opacity 0.4s ease-out;
   }
   #loading.done { opacity: 0; pointer-events: none; }
-  #loading h2 {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-weight: 500;
-    font-size: 24px;
-    color: rgba(255,255,255,0.6);
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-  }
-  #loading p {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-weight: 300;
-    font-size: 12px;
-    color: rgba(255,255,255,0.3);
-  }
 
   @media (max-width: 700px) {
     #photo-panel { width: 100vw; }
@@ -678,26 +663,48 @@
     .ctrl-zoom { height: 40px; font-size: 22px; }
     .year-btn { width: 56px; height: 28px; font-size: 9px; }
 
+    /* Mobile title */
+    #title-overlay .subtitle { font-size: 10px; }
+
+    /* Mobile panel — full screen takeover */
+    #photo-panel { transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+    #panel-tabs { padding: 0; }
+    .panel-tab { padding: 12px 0; font-size: 10px; }
+
     /* Mobile image optimization */
-    #photo-view { padding: 12px; }
+    #photo-view { padding: 12px 8px; }
     #photo-view img {
       max-height: 55vh;
-      transition: opacity 0.2s ease;
+      transition: opacity 0.15s ease;
     }
-    .panel-nav { width: 38px; height: 38px; font-size: 20px; }
-    #nav-prev { left: 12px; }
-    #nav-next { right: 12px; }
-    #panel-close { top: 4px; left: 10px; }
+
+    /* Mobile caption */
+    #photo-caption { margin-top: 12px; padding-bottom: 12px; }
+    #photo-caption .location-name { font-size: 16px; }
+    #photo-caption .photo-date { font-size: 11px; }
+
+    /* Mobile nav controls — touch-friendly sizing */
+    .panel-nav { width: 42px; height: 42px; font-size: 20px; }
+    #nav-prev { left: 8px; }
+    #nav-next { right: 8px; }
+    #panel-close { top: 4px; left: 8px; font-size: 16px; }
+
+    /* Mobile info card */
+    .info-card { width: 200px; font-size: 11px; padding: 14px 16px; }
+
+    /* Touch: disable hover effects that cause sticky states on mobile */
+    .ctrl-btn:hover { color: inherit; background: inherit; }
+    .year-btn:hover { color: inherit; background: inherit; }
+
+    /* Swipe hint — subtle visual affordance */
+    .panel-nav { opacity: 0.7; }
   }
 </style>
 </head>
 <body>
 
 <!-- Loading -->
-<div id="loading">
-  <h2>Maps to Stockton</h2>
-  <p>Loading photographs...</p>
-</div>
+<div id="loading"></div>
 
 <!-- Title -->
 <div id="title-overlay">
@@ -1236,6 +1243,34 @@ document.addEventListener('keydown', e => {
   if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); navigatePrev(); }
 });
 
+// ═══════════════════════════════════════════
+//  TOUCH SWIPE (mobile nav)
+// ═══════════════════════════════════════════
+(function() {
+  const panelBody = document.getElementById('panel-body');
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let swiping = false;
+
+  panelBody.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    swiping = true;
+  }, { passive: true });
+
+  panelBody.addEventListener('touchend', e => {
+    if (!swiping || !currentPhoto) return;
+    swiping = false;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    // Only trigger if horizontal swipe > 50px and more horizontal than vertical
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      if (dx < 0) navigateNext();
+      else navigatePrev();
+    }
+  }, { passive: true });
+})();
+
 // Tabs
 function switchTab(name) {
   document.querySelectorAll('.panel-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
@@ -1249,9 +1284,12 @@ document.querySelectorAll('.panel-tab').forEach(t => t.addEventListener('click',
 createMarkers(PHOTOS);
 visiblePhotos = [...PHOTOS];
 
-  // Dismiss loading
-  setTimeout(() => document.getElementById('loading').classList.add('done'), 800);
-  setTimeout(() => document.getElementById('loading').remove(), 1500);
+  // Dismiss loading — immediate fade once data is ready
+  const loadEl = document.getElementById('loading');
+  if (loadEl) {
+    loadEl.classList.add('done');
+    setTimeout(() => loadEl.remove(), 500);
+  }
 }
 
 fetch('photos.json')
@@ -1262,8 +1300,8 @@ fetch('photos.json')
   })
   .catch(err => {
     console.error('Failed to load photo data:', err);
-    setTimeout(() => document.getElementById('loading').classList.add('done'), 800);
-    setTimeout(() => document.getElementById('loading').remove(), 1500);
+    const loadEl = document.getElementById('loading');
+    if (loadEl) { loadEl.classList.add('done'); setTimeout(() => loadEl.remove(), 500); }
   });
 
 </script>
