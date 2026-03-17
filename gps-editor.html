@@ -712,16 +712,45 @@
 //  DATA — fetched fresh from live site
 // ═══════════════════════════════════════════
 let ORIGINAL_DATA = [];
-try {
-  const resp = await fetch('photos.json?_=' + Date.now());
-  if (resp.ok) {
-    ORIGINAL_DATA = await resp.json();
-    // Strip any leftover internal flags from previously published data
-    ORIGINAL_DATA = ORIGINAL_DATA.map(p => { const c = {...p}; delete c.edited; delete c.isNew; return c; });
+
+// Try GitHub API first (always has latest published data), fall back to local photos.json
+async function fetchPhotoData() {
+  const ghSettings = (() => {
+    try { return JSON.parse(localStorage.getItem('mts-github-settings')) || null; }
+    catch { return null; }
+  })();
+
+  // Try GitHub API (has latest even when Netlify builds are stopped)
+  if (ghSettings && ghSettings.token && ghSettings.username && ghSettings.repo) {
+    try {
+      const apiUrl = `https://api.github.com/repos/${ghSettings.username}/${ghSettings.repo}/contents/photos.json`;
+      const resp = await fetch(apiUrl, {
+        headers: { 'Authorization': `Bearer ${ghSettings.token}`, 'Accept': 'application/vnd.github.v3+json' }
+      });
+      if (resp.ok) {
+        const fileData = await resp.json();
+        const decoded = decodeURIComponent(escape(atob(fileData.content)));
+        return JSON.parse(decoded);
+      }
+    } catch (e) {
+      console.warn('GitHub fetch failed, trying local:', e);
+    }
   }
-} catch (e) {
-  console.warn('Could not fetch photos.json:', e);
+
+  // Fall back to local photos.json
+  try {
+    const resp = await fetch('photos.json?_=' + Date.now());
+    if (resp.ok) return await resp.json();
+  } catch (e) {
+    console.warn('Local fetch also failed:', e);
+  }
+
+  return [];
 }
+
+ORIGINAL_DATA = await fetchPhotoData();
+// Strip any leftover internal flags from previously published data
+ORIGINAL_DATA = ORIGINAL_DATA.map(p => { const c = {...p}; delete c.edited; delete c.isNew; return c; });
 
 if (ORIGINAL_DATA.length === 0) {
   document.getElementById('toast').textContent = 'Error: could not load photos.json';
@@ -786,10 +815,10 @@ const _savedSession = loadSession();
 if (_savedSession && _savedSession.photos) {
   const savedMap = new Map(_savedSession.photos.map(p => [p.id, p]));
 
-  // Restore edits to existing photos
+  // Only restore fields from session if the photo was actually edited or deleted
   DATA.forEach(d => {
     const saved = savedMap.get(d.id);
-    if (saved) {
+    if (saved && (saved._edited || saved._deleted)) {
       d.title = saved.title;
       d.date = saved.date;
       d.lat = saved.lat;
