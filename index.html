@@ -985,10 +985,10 @@ let shuffleMode = false;  // false = sequential, true = random (set by Random bu
 
 // Random button — activates shuffle mode
 document.getElementById('ctrl-random').addEventListener('click', () => {
-  if (visiblePhotos.length === 0) return;
+  if (PHOTOS.length === 0) return;
   shuffleMode = true;
-  const idx = Math.floor(Math.random() * visiblePhotos.length);
-  openPanel(visiblePhotos[idx]);
+  const idx = Math.floor(Math.random() * PHOTOS.length);
+  openPanel(PHOTOS[idx]);
 });
 
 // ═══════════════════════════════════════════
@@ -1007,11 +1007,11 @@ function pushNavHistory(photo) {
 }
 
 function getRandomPhoto(excludeId) {
-  if (visiblePhotos.length <= 1) return visiblePhotos[0] || null;
+  if (PHOTOS.length <= 1) return PHOTOS[0] || null;
   let attempts = 0;
   let photo;
   do {
-    photo = visiblePhotos[Math.floor(Math.random() * visiblePhotos.length)];
+    photo = PHOTOS[Math.floor(Math.random() * PHOTOS.length)];
     attempts++;
   } while (photo.id === excludeId && attempts < 20);
   return photo;
