@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Maps to Stockton by Brandon Getty | Street Photography from Stockton, California</title>
 
 <!-- SEO Meta Tags -->
@@ -471,8 +471,35 @@
     border-radius: 2px;
     transition: opacity 0.25s ease;
     will-change: opacity;
+    transform-origin: center center;
+    touch-action: none;
   }
   #photo-view img.loading { opacity: 0; }
+
+  /* Prevent browser viewport zoom inside the panel — keep controls visible */
+  #photo-panel { touch-action: pan-y; }
+  #panel-tabs { touch-action: manipulation; }
+  #panel-body { touch-action: pan-y; }
+
+  /* Zoom reset hint */
+  .zoom-reset-hint {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.7);
+    color: rgba(255,255,255,0.8);
+    font-size: 11px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 5;
+    backdrop-filter: blur(8px);
+    letter-spacing: 0.03em;
+  }
+  .zoom-reset-hint.visible { opacity: 1; }
 
   /* Caption */
   #photo-caption {
@@ -766,6 +793,7 @@
   <div id="panel-body">
     <div id="photo-view" class="panel-view active">
       <img id="panel-photo" src="" alt="" />
+      <div class="zoom-reset-hint" id="zoom-hint">Double-tap to reset zoom</div>
       <div id="photo-caption">
         <div class="location-name" id="caption-location"></div>
         <div class="photo-date" id="caption-date"></div>
@@ -1249,6 +1277,7 @@ document.addEventListener('keydown', e => {
 // ═══════════════════════════════════════════
 (function() {
   const panelBody = document.getElementById('panel-body');
+  const panelImg = document.getElementById('panel-photo');
   let touchStartX = 0;
   let touchStartY = 0;
   let swiping = false;
@@ -1262,6 +1291,12 @@ document.addEventListener('keydown', e => {
   panelBody.addEventListener('touchend', e => {
     if (!swiping || !currentPhoto) return;
     swiping = false;
+    // Skip swipe nav if image is zoomed in (transform contains scale > 1)
+    const t = panelImg.style.transform;
+    if (t && t.indexOf('scale') !== -1) {
+      const m = t.match(/scale\(([\d.]+)\)/);
+      if (m && parseFloat(m[1]) > 1.05) return;
+    }
     const dx = e.changedTouches[0].clientX - touchStartX;
     const dy = e.changedTouches[0].clientY - touchStartY;
     // Only trigger if horizontal swipe > 50px and more horizontal than vertical
@@ -1284,6 +1319,198 @@ document.querySelectorAll('.panel-tab').forEach(t => t.addEventListener('click',
 // ═══════════════════════════════════════════
 createMarkers(PHOTOS);
 visiblePhotos = [...PHOTOS];
+
+// ═══════════════════════════════════════════
+//  MOBILE PINCH-TO-ZOOM (on photo image only)
+// ═══════════════════════════════════════════
+(function() {
+  const img = document.getElementById('panel-photo');
+  const hint = document.getElementById('zoom-hint');
+  let scale = 1, lastScale = 1;
+  let posX = 0, posY = 0, lastPosX = 0, lastPosY = 0;
+  let pinchStartDist = 0, pinchStartScale = 1;
+  let isPinching = false;
+  let panStartX = 0, panStartY = 0;
+  let isPanning = false;
+  let lastTap = 0;
+
+  function resetZoom() {
+    scale = 1; lastScale = 1;
+    posX = 0; posY = 0; lastPosX = 0; lastPosY = 0;
+    img.style.transform = '';
+    hint.classList.remove('visible');
+  }
+
+  function applyTransform() {
+    img.style.transform = 'translate(' + posX + 'px, ' + posY + 'px) scale(' + scale + ')';
+  }
+
+  function getDist(t1, t2) {
+    const dx = t1.clientX - t2.clientX;
+    const dy = t1.clientY - t2.clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  // Reset zoom when navigating to new photo
+  const origOpenPanel = openPanel;
+  // We can't easily override openPanel, so hook into image load
+  const observer = new MutationObserver(() => { resetZoom(); });
+  observer.observe(img, { attributes: true, attributeFilter: ['src'] });
+
+  img.addEventListener('touchstart', function(e) {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      isPinching = true;
+      isPanning = false;
+      pinchStartDist = getDist(e.touches[0], e.touches[1]);
+      pinchStartScale = scale;
+    } else if (e.touches.length === 1 && scale > 1) {
+      // Pan when zoomed in
+      isPanning = true;
+      panStartX = e.touches[0].clientX - posX;
+      panStartY = e.touches[0].clientY - posY;
+    }
+
+    // Double-tap detection
+    if (e.touches.length === 1) {
+      const now = Date.now();
+      if (now - lastTap < 300) {
+        e.preventDefault();
+        if (scale > 1) {
+          resetZoom();
+        } else {
+          scale = 2.5; lastScale = scale;
+          // Zoom into tap point
+          const rect = img.getBoundingClientRect();
+          const tapX = e.touches[0].clientX - rect.left - rect.width / 2;
+          const tapY = e.touches[0].clientY - rect.top - rect.height / 2;
+          posX = -tapX * 1.5; posY = -tapY * 1.5;
+          lastPosX = posX; lastPosY = posY;
+          applyTransform();
+          hint.classList.add('visible');
+          setTimeout(() => hint.classList.remove('visible'), 2000);
+        }
+        lastTap = 0;
+        return;
+      }
+      lastTap = now;
+    }
+  }, { passive: false });
+
+  img.addEventListener('touchmove', function(e) {
+    if (isPinching && e.touches.length === 2) {
+      e.preventDefault();
+      const dist = getDist(e.touches[0], e.touches[1]);
+      scale = Math.min(Math.max(pinchStartScale * (dist / pinchStartDist), 1), 5);
+
+      // Pan with pinch center
+      const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+
+      if (scale <= 1) {
+        posX = 0; posY = 0;
+      }
+
+      applyTransform();
+
+      if (scale > 1) {
+        hint.classList.add('visible');
+      }
+    } else if (isPanning && e.touches.length === 1 && scale > 1) {
+      e.preventDefault();
+      posX = e.touches[0].clientX - panStartX;
+      posY = e.touches[0].clientY - panStartY;
+      applyTransform();
+    }
+  }, { passive: false });
+
+  img.addEventListener('touchend', function(e) {
+    if (isPinching) {
+      isPinching = false;
+      lastScale = scale;
+      lastPosX = posX; lastPosY = posY;
+      if (scale <= 1.05) {
+        resetZoom();
+      } else {
+        setTimeout(() => hint.classList.remove('visible'), 2000);
+      }
+    }
+    if (isPanning && e.touches.length === 0) {
+      isPanning = false;
+      lastPosX = posX; lastPosY = posY;
+    }
+  }, { passive: true });
+})();
+
+// ═══════════════════════════════════════════
+//  STATE PERSISTENCE (sessionStorage)
+// ═══════════════════════════════════════════
+const STATE_KEY = 'mts-map-state';
+
+function saveMapState() {
+  try {
+    const center = map.getCenter();
+    const activeYear = document.querySelector('.year-btn.active');
+    const state = {
+      lat: center.lat,
+      lng: center.lng,
+      zoom: map.getZoom(),
+      year: activeYear ? activeYear.dataset.year : 'all',
+      theme: isDark ? 'dark' : 'light'
+    };
+    sessionStorage.setItem(STATE_KEY, JSON.stringify(state));
+  } catch(e) {}
+}
+
+function restoreMapState() {
+  try {
+    const raw = sessionStorage.getItem(STATE_KEY);
+    if (!raw) return false;
+    const state = JSON.parse(raw);
+
+    // Restore theme
+    if (state.theme === 'light' && isDark) {
+      document.getElementById('ctrl-theme').click();
+    }
+
+    // Restore year filter
+    if (state.year && state.year !== 'all') {
+      const yearBtn = document.querySelector('.year-btn[data-year="' + state.year + '"]');
+      if (yearBtn) {
+        document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
+        yearBtn.classList.add('active');
+        visiblePhotos = PHOTOS.filter(p => getYear(p.date) === state.year);
+        createMarkers(visiblePhotos);
+      }
+    }
+
+    // Restore map position
+    if (state.lat != null && state.lng != null && state.zoom != null) {
+      map.setView([state.lat, state.lng], state.zoom, { animate: false });
+      return true;
+    }
+  } catch(e) {}
+  return false;
+}
+
+// Save state on map move/zoom
+map.on('moveend', saveMapState);
+map.on('zoomend', saveMapState);
+
+// Save state when year filter changes
+document.querySelectorAll('.year-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    setTimeout(saveMapState, 200);
+  });
+});
+
+// Save state when theme changes
+document.getElementById('ctrl-theme').addEventListener('click', () => {
+  setTimeout(saveMapState, 100);
+});
+
+// Try to restore state — if successful, skip default bounds fit
+const stateRestored = restoreMapState();
 
   // Dismiss loading — immediate fade once data is ready
   const loadEl = document.getElementById('loading');
