@@ -1509,8 +1509,13 @@ document.getElementById('ctrl-theme').addEventListener('click', () => {
   setTimeout(saveMapState, 100);
 });
 
-// Try to restore state — if successful, skip default bounds fit
-const stateRestored = restoreMapState();
+// Only restore state on actual page refresh, not fresh navigation
+const navEntry = performance.getEntriesByType('navigation')[0];
+const isReload = navEntry && navEntry.type === 'reload';
+if (!isReload) {
+  sessionStorage.removeItem(STATE_KEY);
+}
+const stateRestored = isReload ? restoreMapState() : false;
 
   // Dismiss loading — immediate fade once data is ready
   const loadEl = document.getElementById('loading');
