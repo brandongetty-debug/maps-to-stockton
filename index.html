@@ -1195,6 +1195,9 @@ function openPanel(photo, opts = {}) {
       }
     }, 400);
   }
+
+  // Persist current photo in state
+  if (typeof saveMapState === 'function') setTimeout(saveMapState, 600);
 }
 
 function closePanel() {
@@ -1206,6 +1209,8 @@ function closePanel() {
   streetviewFrame.src = '';
   // Re-invalidate map to fill viewport
   setTimeout(() => map.invalidateSize({ animate: true }), 480);
+  // Persist that panel is closed
+  if (typeof saveMapState === 'function') setTimeout(saveMapState, 100);
 }
 
 // Close events
@@ -1456,7 +1461,8 @@ function saveMapState() {
       lng: center.lng,
       zoom: map.getZoom(),
       year: activeYear ? activeYear.dataset.year : 'all',
-      theme: isDark ? 'dark' : 'light'
+      theme: isDark ? 'dark' : 'light',
+      photoId: currentPhoto ? currentPhoto.id : null
     };
     sessionStorage.setItem(STATE_KEY, JSON.stringify(state));
   } catch(e) {}
@@ -1487,8 +1493,17 @@ function restoreMapState() {
     // Restore map position
     if (state.lat != null && state.lng != null && state.zoom != null) {
       map.setView([state.lat, state.lng], state.zoom, { animate: false });
-      return true;
     }
+
+    // Restore open photo
+    if (state.photoId) {
+      const photo = PHOTOS.find(p => p.id === state.photoId);
+      if (photo) {
+        setTimeout(() => openPanel(photo), 300);
+      }
+    }
+
+    return true;
   } catch(e) {}
   return false;
 }
