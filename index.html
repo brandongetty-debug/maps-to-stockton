@@ -838,13 +838,21 @@ const STOCKTON = [37.9577, -121.2908];
 // CARTO now requires a free API key (get one at carto.com/basemaps/apikey)
 const CARTO_API_KEY = 'cb1_55le_1_4db2bf54a7c5f96ade996c23';
 
+// 512px tiles shown one zoom level up = larger, readable street labels.
+// CARTO only serves up to zoom 18, so zoom 19 upscales the z18 tiles instead of going blank.
+const TILE_OPTS = {
+  attribution: '&copy; OpenStreetMap &copy; CARTO',
+  subdomains: 'abcd',
+  tileSize: 512,
+  zoomOffset: -1,
+  maxNativeZoom: 18,
+  maxZoom: 19
+};
 const darkLayer = L.tileLayer(
-  'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?key=' + CARTO_API_KEY,
-  { attribution: '&copy; OpenStreetMap &copy; CARTO', subdomains: 'abcd', maxZoom: 19 }
+  'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png?key=' + CARTO_API_KEY, TILE_OPTS
 );
 const lightLayer = L.tileLayer(
-  'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=' + CARTO_API_KEY,
-  { attribution: '&copy; OpenStreetMap &copy; CARTO', subdomains: 'abcd', maxZoom: 19 }
+  'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png?key=' + CARTO_API_KEY, TILE_OPTS
 );
 
 let isDark = true;
@@ -854,6 +862,7 @@ const map = L.map('map', {
   zoom: 14,
   layers: [darkLayer],
   zoomControl: false,
+  maxZoom: 19,
 });
 
 // ═══════════════════════════════════════════
