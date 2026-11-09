@@ -848,9 +848,6 @@ const TILE_OPTS = {
   maxNativeZoom: 18,
   maxZoom: 19
 };
-const darkLayer = L.tileLayer(
-  'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png?key=' + CARTO_API_KEY, TILE_OPTS
-);
 const lightLayer = L.tileLayer(
   'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png?key=' + CARTO_API_KEY, TILE_OPTS
 );
@@ -860,10 +857,20 @@ let isDark = true;
 const map = L.map('map', {
   center: STOCKTON,
   zoom: 14,
-  layers: [darkLayer],
   zoomControl: false,
   maxZoom: 19,
 });
+
+// Dark mode: base map + street names on a separate layer, brightened so they're readable
+map.createPane('labels');
+map.getPane('labels').style.zIndex = 450;
+map.getPane('labels').style.pointerEvents = 'none';
+map.getPane('labels').style.filter = 'brightness(2.2) contrast(1.2)';
+const darkLayer = L.layerGroup([
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}@2x.png?key=' + CARTO_API_KEY, TILE_OPTS),
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}@2x.png?key=' + CARTO_API_KEY, { ...TILE_OPTS, pane: 'labels', attribution: '' })
+]);
+darkLayer.addTo(map);
 
 // ═══════════════════════════════════════════
 //  CONTROLS
